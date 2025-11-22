@@ -1,0 +1,8 @@
+.tablepadding {
+    padding: 30px 40px; /* top/bottom, left/right spacing */
+     /* sidebar width */
+}
+.search-box-small {
+    width: 350px !important;   /* Make search bar smaller */
+    max-width: 100%;
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<!-- =========================================================
+* Sneat - Bootstrap 5 HTML Admin Template - Pro | v1.0.0
+==============================================================
+
+* Product Page: https://themeselection.com/products/sneat-bootstrap-html-admin-template/
+* Created by: ThemeSelection
+========================================================= -->
+<!-- beautify ignore:start -->
+<html
+        lang="en"
+        class="light-style layout-menu-fixed"
+        dir="ltr"
+        data-theme="theme-default"
+        data-assets-path="../assets/"
+        data-template="vertical-menu-template-free"
+>
+<head>
+    <meta charset="utf-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <title>Library management system</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+            rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="/vendor/fonts/boxicons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/css/demo.css" />
+    <link rel="stylesheet" href="/css/padding.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+
+    <!-- Helpers -->
+    <script src="/vendor/js/helpers.js"></script>
+
+    <!-- Config -->
+    <script src="/js/config.js"></script>
+</head>
+
+<body>
+<!-- Layout wrapper -->
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <!-- Menu -->
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+            <div class="app-brand demo">
+                <a href="index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <svg width="25" viewBox="0 0 25 42"> </svg>
+              </span>
+                    <span class="app-brand-text demo menu-text fw-bolder ms-2">library</span>
+                </a>
+
+                <a href="#" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                    <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                </a>
+            </div>
+
+            <div class="menu-inner-shadow"></div>
+
+            <ul class="menu-inner py-1">
+                <li class="menu-item">
+                    <a th:href="@{/books}" class="menu-link">
+
+                        <div data-i18n="Analytics">Books</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/vendors}" class="menu-link">
+
+                        <div data-i18n="Analytics">Vendor</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/purchaselist}" class="menu-link">
+
+                        <div data-i18n="Analytics">Purchase list</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/student}" class="menu-link">
+
+                        <div data-i18n="Analytics">Student</div>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout page -->
+        <div class="layout-page">
+
+            <!-- Content wrapper -->
+            <div class="tablepadding">
+                <div class="card">
+                    <h5 class="card-header">Purchase List</h5>
+
+                    <div class="table-responsive text-nowrap">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Vendor</th>
+                                <th>Date</th>
+                                <th>Quantity</th>
+                                <th>Per Book Price</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="purchase : ${purchaseList}">
+                                <td>
+                                    <strong th:text="${purchase.book}"></strong>
+                                </td>
+                                <td th:text="${purchase.vendor}"></td>
+                                <td th:text="${purchase.date}"></td>
+                                <td th:text="${purchase.quantity}"></td>
+                                <td th:text="'₹' + ${#numbers.formatDecimal(purchase.pricePerBook, 1, 2)}"></td>
+                                <td th:text="'₹' + ${#numbers.formatDecimal(purchase.totalAmount, 1, 2)}"></td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="javascript:void(0);">
+                                                <i class="bx bx-edit-alt me-1"></i> Edit
+                                            </a>
+                                            <a class="dropdown-item" href="javascript:void(0);">
+                                                <i class="bx bx-trash me-1"></i> Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(purchaseList)}">
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    No purchases found. <a th:href="@{/addpurchase}">Add your first purchase</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit"><a th:href="@{/addpurchase}">Add Purchase</a></button>
+
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+    <div class="layout-overlay layout-menu-toggle"></div>
+</div>
+
+<!-- Core JS -->
+<script src="../assets/vendor/libs/jquery/jquery.js"></script>
+<script src="../assets/vendor/libs/popper/popper.js"></script>
+<script src="../assets/vendor/js/bootstrap.js"></script>
+<script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+<script src="../assets/vendor/js/menu.js"></script>
+
+<script src="../assets/js/main.js"></script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      lang="en"
+      class="light-style layout-menu-fixed"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="../assets/"
+      data-template="vertical-menu-template-free">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>Library management system</title>
+    <meta name="description" content="" />
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" />
+    <link rel="stylesheet" href="/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="/css/demo.css" />
+    <link rel="stylesheet" href="/css/padding.css" />
+    <link rel="stylesheet" href="/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+    <script src="/vendor/js/helpers.js"></script>
+    <script src="/js/config.js"></script>
+
+    <style>
+        .cart-summary {
+            position: fixed;
+            right: 24px;
+            top: 90px;
+            width: 260px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            padding: 14px;
+            z-index: 1050;
+            display: none;
+        }
+        .cart-summary h5 { margin-top:0; margin-bottom:10px; font-weight:700; }
+        .cart-item { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+        .cart-controls { display:flex; align-items:center; gap:6px; }
+        .cart-controls button { min-width:28px; min-height:28px; padding:0 6px; border-radius:4px; }
+        .go-checkout { width:100%; margin-top:10px; background: #ff7b00; border-color: #ff7b00; color:white; }
+        .btn-add-cart { margin-left:6px; }
+        @media (max-width: 900px) {
+            .cart-summary { position: static; width: auto; margin: 10px; display:block; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+            <div class="app-brand demo">
+                <a href="index.html" class="app-brand-link">
+                    <span class="app-brand-logo demo">
+                        <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg"></svg>
+                    </span>
+                    <span class="app-brand-text demo menu-text fw-bolder ms-2">library</span>
+                </a>
+                <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                    <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                </a>
+            </div>
+            <div class="menu-inner-shadow"></div>
+            <ul class="menu-inner py-1">
+
+                <li class="menu-item">
+                    <a th:href="@{/books}" class="menu-link">
+
+                        <div data-i18n="Analytics">Books</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/vendors}" class="menu-link">
+
+                        <div data-i18n="Analytics">Vendor</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/purchaselist}" class="menu-link">
+
+                        <div data-i18n="Analytics">Purchase list</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/student}" class="menu-link">
+
+                        <div data-i18n="Analytics">Student</div>
+                    </a>
+                </li>
+
+            </ul>
+        </aside>
+
+        <div class="layout-page">
+            <div class="tablepadding">
+                <!-- Existing Book Table -->
+                <div class="card">
+                    <h5 class="card-header">Book Details Table</h5>
+                    <div class="table-responsive text-nowrap">
+                        <table class="table" id="booksTable">
+                            <thead>
+                            <tr>
+                                <th>Book Name</th>
+                                <th>Book Title</th>
+                                <th>Author</th>
+                                <th>Publisher</th>
+                                <th>Book Description</th>
+                                <th>Stock Count</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="book : ${bookList}" data-book-id="[[${book.id}]]">
+                                <td><strong th:text="${book.name}">book</strong></td>
+                                <td th:text="${book.title}">book title</td>
+                                <td th:text="${book.author}">author</td>
+                                <td th:text="${book.publisher}">publisher</td>
+                                <td th:text="${book.description}">description</td>
+                                <td class="stock-count" th:text="${book.stock}">200</td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Cart Table -->
+                <div class="card mt-3" id="cartTableCard" style="display:none;">
+                    <h5 class="card-header">Cart Items</h5>
+                    <div class="table-responsive text-nowrap">
+                        <table class="table" id="cartTable">
+                            <thead>
+                            <tr>
+                                <th>Book Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a th:href="@{/addbook}" class="btn btn-primary">Add New Book</a>
+                </div>
+                <button class="btn go-checkout" ><a th:href="@{/buybook}">buy books</a></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout-overlay layout-menu-toggle"></div>
+</div>
+
+<!-- Cart Summary -->
+<div class="cart-summary" id="cartSummary">
+    <h5>Cart Summary</h5>
+    <div id="cartItemsContainer"></div>
+    <div style="border-top:1px solid #e8e8e8; padding-top:8px; margin-top:6px;">
+        <div>Total Items: <span id="totalItems">0</span></div>
+        <div>Total Amount: BDT <span id="totalAmount">0.0</span></div>
+    </div>
+    <button class="btn go-checkout" id="goToCheckoutBtn">Go To Checkout</button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="submitModal" tabindex="-1" aria-labelledby="submitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background:#222; color: #fff; border-radius:10px;">
+            <div class="modal-header" style="border-bottom:none;">
+                <h5 class="modal-title" id="submitModalLabel" style="color:#ff8a00;">Enter Submission Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="submitForm">
+                    <input type="hidden" id="modalBookName" name="bookName">
+                    <div class="mb-3">
+                        <label class="form-label">Submission Type</label>
+                        <select class="form-select" id="submissionType">
+                            <option value="">Select Submission Type</option>
+                            <option value="normal">Normal</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subscription Type</label>
+                        <select class="form-select" id="subscriptionType">
+                            <option value="">Select Subscription Type</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cart Date</label>
+                        <input type="date" class="form-control" id="cartDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top:none;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="modalSubmitBtn" class="btn" style="background:#ff8a00;color:#fff;">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/vendor/libs/jquery/jquery.js"></script>
+<script src="../assets/vendor/libs/popper/popper.js"></script>
+<script src="../assets/vendor/js/bootstrap.js"></script>
+<script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+<script src="../assets/vendor/js/menu.js"></script>
+<script src="../assets/js/main.js"></script>
+
+<script>
+    (function($){
+        const cart = {};
+
+        function showCartSummary() {
+            const container = $('#cartItemsContainer').empty();
+            let totalItems = 0;
+            let totalAmount = 0.0;
+
+            Object.values(cart).forEach(item => {
+                totalItems += item.qty;
+                totalAmount += item.qty * item.price;
+
+                const itemRow = $(`
+                <div class="cart-item" data-book="${item.name}">
+                    <div style="flex:1;">
+                      <div style="font-weight:600;">${item.name}</div>
+                      <div style="font-size:12px;color:#666;">BDT ${item.price} each</div>
+                    </div>
+                    <div class="cart-controls">
+                        <button class="btn btn-sm btn-outline-secondary btn-decrease" title="Decrease">-</button>
+                        <div style="min-width:18px; text-align:center;">${item.qty}</div>
+                        <button class="btn btn-sm btn-outline-secondary btn-increase" title="Increase">+</button>
+                        <button class="btn btn-sm btn-outline-danger btn-delete" title="Delete">&#128465;</button>
+                    </div>
+                </div>
+            `);
+
+                itemRow.find('.btn-increase').on('click', () => {
+                    if (item.qty < item.stock) { item.qty++; updateStockDisplay(item.name, -1); showCartSummary(); }
+                    else alert('No more stock available');
+                });
+                itemRow.find('.btn-decrease').on('click', () => {
+                    if (item.qty > 1) { item.qty--; updateStockDisplay(item.name, +1); showCartSummary(); }
+                    else { updateStockDisplay(item.name, item.qty); delete cart[item.name]; showCartSummary(); }
+                });
+                itemRow.find('.btn-delete').on('click', () => { updateStockDisplay(item.name, item.qty); delete cart[item.name]; showCartSummary(); });
+
+                container.append(itemRow);
+            });
+
+            $('#totalItems').text(totalItems);
+            $('#totalAmount').text(totalAmount.toFixed(1));
+            $('#cartSummary').toggle(totalItems > 0);
+        }
+
+        function showCartTable() {
+            const tbody = $('#cartTable tbody').empty();
+            let hasItems = false;
+
+            Object.values(cart).forEach(item => {
+                hasItems = true;
+                const row = $(`
+                <tr data-book="${item.name}">
+                    <td>${item.name}</td>
+                    <td>${item.price}</td>
+                    <td>${item.qty}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary btn-increase">+</button>
+                        <button class="btn btn-sm btn-outline-secondary btn-decrease">-</button>
+                        <button class="btn btn-sm btn-outline-danger btn-delete">&#128465;</button>
+                    </td>
+                </tr>
+            `);
+
+                row.find('.btn-increase').on('click', () => {
+                    if (item.qty < item.stock) { item.qty++; updateStockDisplay(item.name, -1); showCartTable(); showCartSummary(); }
+                    else alert('No more stock available');
+                });
+                row.find('.btn-decrease').on('click', () => {
+                    if (item.qty > 1) { item.qty--; updateStockDisplay(item.name, +1); showCartTable(); showCartSummary(); }
+                    else { updateStockDisplay(item.name, item.qty); delete cart[item.name]; showCartTable(); showCartSummary(); }
+                });
+                row.find('.btn-delete').on('click', () => { updateStockDisplay(item.name, item.qty); delete cart[item.name]; showCartTable(); showCartSummary(); });
+
+                tbody.append(row);
+            });
+
+            $('#cartTableCard').toggle(hasItems);
+        }
+
+        function updateStockDisplay(bookName, delta) {
+            const rowBtn = $(`.btn-add-cart[data-book-name="${bookName}"]`).first();
+            if (!rowBtn.length) return;
+            const stockCell = rowBtn.closest('td').siblings('.stock-count').first();
+            let current = parseInt(stockCell.text()) || 0;
+            current += delta;
+            if (current < 0) current = 0;
+            stockCell.text(current);
+        }
+
+        $(document).ready(function(){
+            $(document).on('click', '.btn-add-cart', function(){
+                const bookName = $(this).data('book-name') || $(this).closest('tr').find('strong').text().trim();
+                const bookTitle = $(this).data('book-title') || $(this).closest('tr').find('td').eq(1).text().trim();
+                const price = Number($(this).data('book-price') || 0);
+                const stock = Number($(this).data('book-stock') || $(this).closest('tr').find('.stock-count').text().trim() || 0);
+
+                if (!cart[bookName]) { cart[bookName] = { name: bookName, title: bookTitle, price: price, qty: 1, stock: stock }; }
+                else { if (cart[bookName].qty < stock) cart[bookName].qty++; else { alert('No more stock available'); return; } }
+
+                updateStockDisplay(bookName, -1);
+                showCartTable();
+                showCartSummary();
+            });
+
+            $('#goToCheckoutBtn').on('click', function(){ alert('Proceeding to checkout (client-side demo).'); });
+        });
+    })(jQuery);
+</script>
+
+</body>
+</html>

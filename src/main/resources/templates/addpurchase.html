@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="../assets/" data-template="vertical-menu-template-free">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>Library Management System</title>
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/vendor/fonts/boxicons.css" />
+    <link rel="stylesheet" href="/vendor/css/core.css" />
+    <link rel="stylesheet" href="/vendor/css/theme-default.css" />
+    <link rel="stylesheet" href="/css/demo.css" />
+</head>
+
+<body>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+
+        <!-- Sidebar Menu -->
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+            <div class="app-brand demo">
+                <a href="index.html" class="app-brand-link">
+                    <span class="app-brand-text demo fw-bolder ms-2">Library</span>
+                </a>
+            </div>
+
+            <div class="menu-inner-shadow"></div>
+
+            <ul class="menu-inner py-1">
+                <li class="menu-item">
+                    <a th:href="@{/books}" class="menu-link">
+
+                        <div data-i18n="Analytics">Books</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/vendors}" class="menu-link">
+
+                        <div data-i18n="Analytics">Vendor</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/purchaselist}" class="menu-link">
+
+                        <div data-i18n="Analytics">Purchase list</div>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a th:href="@{/student}" class="menu-link">
+
+                        <div data-i18n="Analytics">Student</div>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        <!-- / Menu -->
+
+
+        <!-- Layout Page -->
+        <div class="layout-page">
+
+            <!-- Purchase Form -->
+            <div class="row">
+                <div class="col-xl">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Add Purchase</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="addPurchaseForm" th:action="@{/addpurchase}" th:object="${dto}" method="POST">
+
+                                <!-- Book Dropdown -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="bookName">Book</label>
+                                    <select class="form-control" id="bookName" th:field="*{book}" required>
+                                        <option value="">Select a book</option>
+                                        <option th:each="book : ${books}"
+                                                th:value="${book.name}"
+                                                th:text="${book.name}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Vendor Dropdown -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="vendorName">Vendor</label>
+                                    <select class="form-control" id="vendorName" th:field="*{vendor}" required>
+                                        <option value="">Select a vendor</option>
+                                        <option th:each="vendor : ${vendors}"
+                                                th:value="${vendor.name}"
+                                                th:text="${vendor.name}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Date -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="purchaseDate">Date</label>
+                                    <input type="date" class="form-control" id="purchaseDate" th:field="*{date}" required />
+                                </div>
+
+                                <!-- Quantity -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="quantity">Quantity</label>
+                                    <input type="number" class="form-control" id="quantity" placeholder="Enter quantity" th:field="*{quantity}" min="1" required />
+                                </div>
+
+                                <!-- Price per Book -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="pricePerBook">Price Per Book</label>
+                                    <input type="number" class="form-control" id="pricePerBook" placeholder="Enter price per book" th:field="*{pricePerBook}" min="0" step="0.01" required />
+                                </div>
+
+                                <!-- Total Amount -->
+                                <div class="mb-3">
+                                    <label class="form-label" for="totalAmount">Total Amount</label>
+                                    <input type="number" class="form-control" id="totalAmount" placeholder="Total auto-calculated" th:field="*{totalAmount}" readonly />
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Add Purchase</button>
+                                <a th:href="@{/purchaselist}" class="btn btn-outline-secondary">Cancel</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Purchase Form -->
+
+        </div>
+        <!-- /Layout Page -->
+
+    </div>
+    <div class="layout-overlay layout-menu-toggle"></div>
+</div>
+
+<!-- Scripts -->
+<script src="../assets/vendor/libs/jquery/jquery.js"></script>
+<script src="../assets/vendor/libs/popper/popper.js"></script>
+<script src="../assets/vendor/js/bootstrap.js"></script>
+<script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+<script src="../assets/vendor/js/menu.js"></script>
+<script src="../assets/js/main.js"></script>
+
+<script>
+    const qty = document.getElementById('quantity');
+    const price = document.getElementById('pricePerBook');
+    const total = document.getElementById('totalAmount');
+
+    function calculateTotal() {
+        const q = parseFloat(qty.value) || 0;
+        const p = parseFloat(price.value) || 0;
+        total.value = q * p;
+    }
+
+    qty.addEventListener('input', calculateTotal);
+    price.addEventListener('input', calculateTotal);
+</script>
+
+</body>
+</html>
