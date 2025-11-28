@@ -139,7 +139,7 @@ private final StudentDbService studentDbService;
     public String submitBook(@ModelAttribute("dto") BookSubmitDto dto, Model model) {
         try {
             // Validation
-            if (dto.getCount() <= 0) {
+            if (dto.count() <= 0) {
                 model.addAttribute("error", "Count must be greater than 0!");
                 model.addAttribute("books", bookDbService.getAll());
                 model.addAttribute("students", studentDbService.getAll());
@@ -147,7 +147,7 @@ private final StudentDbService studentDbService;
             }
 
             // Decrease book quantity
-            boolean success = bookDbService.decreaseBookQuantity(dto.getBookName(), dto.getCount());
+            boolean success = bookDbService.decreaseBookQuantity(dto.bookName(), dto.count());
 
             if (success) {
                 model.addAttribute("message", "Book submitted successfully! Stock updated.");
