@@ -1,9 +1,6 @@
 package com.example.lms.Controller;
 
-import com.example.lms.Dto.BookDto;
-import com.example.lms.Dto.PurchaseDto;
-import com.example.lms.Dto.StudentDto;
-import com.example.lms.Dto.VendorDto;
+import com.example.lms.Dto.*;
 import com.example.lms.Service.BookDbService;
 import com.example.lms.Service.PurchaseDbService;
 import com.example.lms.Service.StudentDbService;
@@ -12,7 +9,6 @@ import com.example.lms.model.BookDb;
 import com.example.lms.model.PurchaseDb;
 import com.example.lms.model.StudentDb;
 import com.example.lms.model.VendorDb;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -135,41 +131,38 @@ private final StudentDbService studentDbService;
     public String buybook(Model model) {
         model.addAttribute("books", bookDbService.getAll());
         model.addAttribute("students", studentDbService.getAll());
+        model.addAttribute("dto", new BookSubmitDto("","","",0)); // নতুন DTO যোগ করুন
         return "buybook";
     }
 
-    @PostMapping("/submit-book")
-    @ResponseBody
-    public ResponseEntity<String> submitBook(
-            @RequestParam String bookName,
-            @RequestParam String studentName,
-            @RequestParam String type,
-            @RequestParam int count) {
-
+    @PostMapping("/buybook")
+    public String submitBook(@ModelAttribute("dto") BookSubmitDto dto, Model model) {
         try {
-            // Validate count
-            if (count <= 0) {
-                return ResponseEntity.badRequest().body("Count must be greater than 0!");
+            // Validation
+            if (dto.getCount() <= 0) {
+                model.addAttribute("error", "Count must be greater than 0!");
+                model.addAttribute("books", bookDbService.getAll());
+                model.addAttribute("students", studentDbService.getAll());
+                return "buybook";
             }
 
             // Decrease book quantity
-            boolean success = bookDbService.decreaseBookQuantity(bookName, count);
+            boolean success = bookDbService.decreaseBookQuantity(dto.getBookName(), dto.getCount());
 
             if (success) {
-                // Here you can also save the submission record if needed
-                System.out.println("Book submitted - Book: " + bookName +
-                        ", Student: " + studentName +
-                        ", Type: " + type +
-                        ", Count: " + count);
-
-                return ResponseEntity.ok("Book submitted successfully! Stock updated.");
+                model.addAttribute("message", "Book submitted successfully! Stock updated.");
             } else {
-                return ResponseEntity.badRequest().body("Not enough books in stock!");
+                model.addAttribute("error", "Not enough books in stock!");
             }
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            model.addAttribute("error", "Error: " + e.getMessage());
         }
+
+
+        model.addAttribute("books", bookDbService.getAll());
+        model.addAttribute("students", studentDbService.getAll());
+        return "buybook";
     }
 
 }

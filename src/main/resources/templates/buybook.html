@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Book Submission Form</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
         body {
@@ -91,22 +90,27 @@
 <div class="form-container">
     <h2>Book Submission Form</h2>
 
-    <form id="submissionForm">
+    <!-- Messages display -->
+    <div th:if="${message}" class="message success" th:text="${message}"></div>
+    <div th:if="${error}" class="message error" th:text="${error}"></div>
+
+    <!-- Form action change -->
+    <form th:action="@{/buybook}" th:object="${dto}" method="post">
         <!-- Book -->
-        <label for="book">Book Name</label>
-        <select id="book" name="bookName" required>
+        <label for="bookName">Book Name</label>
+        <select id="bookName" th:field="*{bookName}" required>
             <option value="">Select Book</option>
             <option th:each="book : ${books}"
                     th:value="${book.name}"
                     th:text="${book.name}"
-                    th:data-stock="${book.stock}">
+                    th:attr="data-stock=${book.stock}">
             </option>
         </select>
         <div class="book-info" id="bookStockInfo">Available: Select a book</div>
 
         <!-- Student -->
-        <label for="student">Student Name</label>
-        <select id="student" name="studentName" required>
+        <label for="studentName">Student Name</label>
+        <select id="studentName" th:field="*{studentName}" required>
             <option value="">Select Student</option>
             <option th:each="student : ${students}"
                     th:value="${student.name}"
@@ -116,7 +120,7 @@
 
         <!-- Submission Type -->
         <label for="type">Submission Type</label>
-        <select id="type" name="type" required>
+        <select id="type" th:field="*{type}" required>
             <option value="">Select Type</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
@@ -124,62 +128,26 @@
 
         <!-- Count -->
         <label for="count">How Many Books (Count)</label>
-        <input type="number" id="count" name="count" min="1" placeholder="Enter number" required>
+        <input type="number" id="count" th:field="*{count}" min="1" placeholder="Enter number" required>
 
         <button type="submit">Submit</button>
-
-        <div id="message"></div>
     </form>
 </div>
 
 <script>
-    $(document).ready(function() {
-        // Update book stock info when book selection changes
-        $('#book').on('change', function() {
-            const selectedOption = $(this).find('option:selected');
-            const stock = selectedOption.data('stock');
-            if (stock !== undefined) {
-                $('#bookStockInfo').text('Available: ' + stock + ' books');
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookSelect = document.getElementById('bookName');
+        const stockInfo = document.getElementById('bookStockInfo');
+
+        bookSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const stock = selectedOption.getAttribute('data-stock');
+
+            if (stock !== null && stock !== '') {
+                stockInfo.textContent = 'Available: ' + stock + ' books';
             } else {
-                $('#bookStockInfo').text('Available: Select a book');
+                stockInfo.textContent = 'Available: Select a book';
             }
-        });
-
-        $('#submissionForm').on('submit', function(e) {
-            e.preventDefault();
-
-            const formData = {
-                bookName: $('#book').val(),
-                studentName: $('#student').val(),
-                type: $('#type').val(),
-                count: $('#count').val()
-            };
-
-            // Basic validation
-            if (!formData.bookName || !formData.studentName || !formData.type || !formData.count) {
-                $('#message').removeClass('success').addClass('error message').text('Please fill all fields!');
-                return;
-            }
-
-            $.ajax({
-                type: 'POST',
-                url: '/submit-book',
-                data: formData,
-                success: function(response) {
-                    $('#message').removeClass('error').addClass('success message').text(response);
-                    // Reset form on success
-                    $('#submissionForm')[0].reset();
-                    $('#bookStockInfo').text('Available: Select a book');
-
-                    // You might want to reload the page to get updated book quantities
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
-                },
-                error: function(xhr) {
-                    $('#message').removeClass('success').addClass('error message').text(xhr.responseText || 'Error occurred!');
-                }
-            });
         });
     });
 </script>
